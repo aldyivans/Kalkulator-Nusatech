@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
 import './App.css';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      input1: null,
-      input2: null,
-      input3: null,
+      input1: 0,
+      input2: 0,
+      input3: 0,
       amount: 0,
-      check1: false,
-      check2: false,
-      check3: false,
-      inputs: []
     }
   }
   
@@ -20,78 +17,87 @@ class App extends Component {
     this.setState({[e.target.name]: parseInt(e.target.value,10)})
   }
 
-  handleCheckbox1(bool) {
-    if(!bool) {
+  handleCheckbox(e) {
+    if(!this.state[e.target.name]) {
       this.setState({
-        check1: true
+        [e.target.name]: true,
       })
-      return this.state.input1
     } else {
       this.setState({
-        check1: false
+        [e.target.name]: false,
       })
-      return 0
     }
   }
 
-  handleCheckbox2(bool) {
-    if(!bool) {
+  handlePlus(){
+    var checked = this.Calculator();
+    if(checked !== undefined) {
+      var amount = checked.reduce((a, b) => ({num: a.num + b.num}));
       this.setState({
-        check2: true
+        amount: amount.num
       })
-      return this.state.input2
-    } else {
-      this.setState({
-        check2: false
-      })
-      return 0
     }
   }
 
-  handleCheckbox3(bool) {
-    if(!bool) {
+  handleMinus(){
+    var checked = this.Calculator();
+    if(checked !== undefined) {
+      var amount = checked.reduce((a, b) => ({num: a.num - b.num}));
       this.setState({
-        check3: true
+        amount: amount.num
       })
-      return this.state.input3
-    } else {
-      this.setState({
-        check3: false
-      })
-      return 0
     }
   }
 
-  handlePlus() {
-    var amount = this.handleCheckbox1(!this.state.check1)+this.handleCheckbox2(!this.state.check2)+this.handleCheckbox3(!this.state.check3);
-    
-    this.setState({
-      amount: amount
-    })
+  handleTimes(){
+    var checked = this.Calculator();
+    if(checked !== undefined) {
+      var amount = checked.reduce((a, b) => ({num: a.num * b.num}));
+      this.setState({
+        amount: amount.num
+      })
+    }
   }
 
-  handleMinus() {
-    var amount = this.handleCheckbox1(!this.state.check1)-this.handleCheckbox2(!this.state.check2)-this.handleCheckbox3(!this.state.check3);
-    
-    this.setState({
-      amount: amount
-    })
+  handleDivided(){
+    var checked = this.Calculator();
+    if(checked !== undefined) {
+      var amount = checked.reduce((a, b) => ({num: a.num / b.num}));
+      this.setState({
+        amount: amount.num
+      })
+    }
   }
 
-  handleTimes() {
-    var amount = this.handleCheckbox1(!this.state.check1)*this.handleCheckbox2(!this.state.check2)*this.handleCheckbox3(!this.state.check3);
-    
-    this.setState({
-      amount: amount
-    })
-  }
+  Calculator() {
+    var checks = [];
+    var checked = []
 
-  handleDivided() {
-    var amount = this.handleCheckbox1(!this.state.check1)/this.handleCheckbox2(!this.state.check2)/this.handleCheckbox3(!this.state.check3);
+    var data1 = {
+      bool: this.state.check1,
+      num: this.state.input1
+    }
+    var data2 = {
+      bool: this.state.check2,
+      num: this.state.input2
+    }
+    var data3 = {
+      bool: this.state.check3,
+      num: this.state.input3
+    }
 
-    this.setState({
-      amount: amount
+    checks.push(data1,data2,data3)
+    checks.map(res=>{
+      if(res.bool === true) {
+        checked.push(res)
+        console.log(res)
+      }
     })
+    if(checked.length < 2) {
+      alert("at least two fields checked")
+    } else {
+      return checked
+    }
   }
 
   render() {
@@ -99,14 +105,18 @@ class App extends Component {
       <div className="container">
         <div className="row justify-content-center pt-5">
           <div className="col-8">
-            <h1 className="font-weight-bold">Kalkulator Sederhana Dengan ReactJs</h1>
+            <div className="text-center">
+              <h1 className="font-weight-bold">Calculator With ReactJs</h1>
+              <h3></h3>
+              <h4>- Nusantech first test -</h4>
+            </div>
             <hr/>
             <form>
               <div className="input-group mb-3">
                 <input type="number" name="input1" placeholder="input number 1" className="form-control" onChange={this.handleChange.bind(this)} value={this.state.input1 || ""}/>
                 <div className="input-group-prepend">
                   <div className="input-group-text">
-                    <input type="checkbox" name="check1" checked={this.state.check1} onChange={(e) => this.handleCheckbox1(this.state.check1,this)} />
+                    <input type="checkbox" name="check1" onChange={this.handleCheckbox.bind(this)} />
                   </div>
                 </div>
               </div>
@@ -114,7 +124,7 @@ class App extends Component {
                 <input type="number" name="input2" placeholder="input number 2" className="form-control" onChange={this.handleChange.bind(this)} value={this.state.input2 || ""}/>
                 <div className="input-group-prepend">
                   <div className="input-group-text">
-                    <input type="checkbox" name="check2" checked={this.state.check2} onChange={(e) => this.handleCheckbox2(this.state.check2,this)}/>
+                    <input type="checkbox" name="check2" onChange={this.handleCheckbox.bind(this)}/>
                   </div>
                 </div>
               </div>
@@ -122,7 +132,7 @@ class App extends Component {
                 <input type="number" name="input3" placeholder="input number 3" className="form-control" onChange={this.handleChange.bind(this)} value={this.state.input3 || ""}/>
                 <div className="input-group-prepend">
                   <div className="input-group-text">
-                    <input type="checkbox" name="check3" checked={this.state.check3} onChange={(e) => this.handleCheckbox3(this.state.check3,this)}/>
+                    <input type="checkbox" name="check3" onChange={this.handleCheckbox.bind(this)}/>
                   </div>
                 </div>
               </div>
